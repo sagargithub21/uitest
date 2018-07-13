@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+  .input-group .form-control {
+    margin-bottom: 10px;
+}
+    .myProgress {
+  width: 100%;
+  background-color: #ddd;
+}
+
+.myBar {
+  width: 0%;
+  height: 30px;
+  background-color: #4CAF50;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+  </style>
+  </head>
+<body>
+ 
+  <div class="container">
+  <div class="myProgress">
+  <div class="myBar"></div>
+</div>
+  <h2>Filterable Table</h2>
+  <p>Type something in the input field to search the table for first names, last names or emails:</p>  
+  <div class="search-container input-group add-on">
+     <input class="form-control" id="firstname" type="text" placeholder="first name">
+     <input class="form-control" id="lastname" type="text" placeholder="last name">
+     <button type="button" class="btn btn-info" id="search" >
+     <span class="glyphicon glyphicon-search"></span> Search
+    </button>
+  </div>
+  <br>
+  <div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>list_no</th>
+        <th>exam_no</th>
+        <th>first_name</th>
+        <th>last_name</th>
+        <th> list_agency_desc</th>
+        <th> list_title_desc</th>
+        <th> published_date</th>
+      </tr>
+    </thead>
+    <tbody id="myTable">
+      
+    </tbody>
+  </table>
+</div> 
+ 
+</div>
+<script>
+function getdata(fname, lname){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+  console.log(this.readyState +""+this.status);
+    if(this.readyState==1)
+    {
+      for(i=1;i<=50;i++)
+      {
+       $(".myBar").css({"width":i+"%"}).html(i+"%"); 
+     }
+       
+    }
+    else if(this.readyState==2)
+    {
+   
+     
+       
+    }
+    else if(this.readyState==3)
+    {
+     
+       
+        $(".myBar").css({"width":"100%"}).html("100%"); 
+    setTimeout(function(){
+                $(".myBar").hide();  
+                },800);         
+                  
+        
+    }    
+    else if (this.readyState == 4 && this.status == 200) 
+    {
+    
+                
+                 var res=JSON.parse(this.responseText)
+                  var c = res.length
+    data=res;
+    $("#myTable").find("td").remove();
+    for(i=0;i<c;i++)
+    {
+      if(fname != "" && lname != ""){
+        if((res[i].first_name).toUpperCase() == fname && (res[i].last_name).toUpperCase() == lname){
+            $("#myTable").append('<tr><td>'+res[i].list_no+'</td><td>'+res[i].exam_no+'</td><td>'+res[i].first_name+'</td><td>'+res[i].last_name+'</td><td>'+ res[i].list_agency_desc+'</td><td>'+ res[i].list_title_desc +'</td><td>'+ res[i].published_date +'</td></tr>');
+        }
+      }
+      else if(fname != ""  && lname == ""){
+        if((res[i].first_name).toUpperCase() == fname){
+            $("#myTable").append('<tr><td>'+res[i].list_no+'</td><td>'+res[i].exam_no+'</td><td>'+res[i].first_name+'</td><td>'+res[i].last_name+'</td><td>'+ res[i].list_agency_desc+'</td><td>'+ res[i].list_title_desc +'</td><td>'+ res[i].published_date +'</td></tr>');
+        }
+      }
+      else if(fname == "" && lname != ""){
+        if((res[i].last_name).toUpperCase() == lname){
+            $("#myTable").append('<tr><td>'+res[i].list_no+'</td><td>'+res[i].exam_no+'</td><td>'+res[i].first_name+'</td><td>'+res[i].last_name+'</td><td>'+ res[i].list_agency_desc+'</td><td>'+ res[i].list_title_desc +'</td><td>'+ res[i].published_date +'</td></tr>');
+        }
+      }
+      else{
+        $("#myTable").append('<tr><td>'+res[i].list_no+'</td><td>'+res[i].exam_no+'</td><td>'+res[i].first_name+'</td><td>'+res[i].last_name+'</td><td>'+ res[i].list_agency_desc+'</td><td>'+ res[i].list_title_desc +'</td><td>'+ res[i].published_date +'</td></tr>');
+      }
+    }
+
+   
+    }
+    
+  };
+  xhttp.open("GET", "https://data.cityofnewyork.us/resource/5scm-b38n.json", true);
+  xhttp.send();
+}
+
+$("#search").on("click",function(){
+    var fname = $("#firstname").val().toUpperCase();
+    var lname = $("#lastname").val().toUpperCase();
+    
+    getdata(fname, lname);
+
+       
+     })
+
+
+
+ 
+
+
+
+
+</script>
+
+</body>
+</html>
